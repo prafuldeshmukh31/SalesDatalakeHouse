@@ -1,0 +1,1907 @@
+{
+  "datasets": [
+    {
+      "name": "dq_cust_raw",
+      "displayName": "DQ Customer Raw",
+      "queryLines": [
+        "SELECT\n",
+        "  customer_id,\n",
+        "  customer_key,\n",
+        "  first_name,\n",
+        "  last_name,\n",
+        "  marital_status,\n",
+        "  gender,\n",
+        "  birth_date,\n",
+        "  country,\n",
+        "  created_date\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched"
+      ]
+    },
+    {
+      "name": "dq_prd_nulls",
+      "displayName": "DQ Product NULL Counts",
+      "queryLines": [
+        "SELECT\n",
+        "  'product_id' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_id IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'product_key' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_key IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'product_name' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_name IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'cost' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN cost IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'product_line' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_line IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'product_start_date' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_start_date IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'product_end_date' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN product_end_date IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'category' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN category IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'subcategory' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN subcategory IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'maintenance_required' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN maintenance_required IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized"
+      ]
+    },
+    {
+      "name": "dq_freshness",
+      "displayName": "DQ Freshness Metrics",
+      "queryLines": [
+        "SELECT\n",
+        "  'gold_customer_enriched' AS table_name,\n",
+        "  MAX(created_date) AS latest_date,\n",
+        "  DATEDIFF(CURRENT_DATE(), MAX(created_date)) AS days_since_update,\n",
+        "  COUNT(*) AS row_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'gold_sales_denormalized' AS table_name,\n",
+        "  MAX(product_start_date) AS latest_date,\n",
+        "  DATEDIFF(CURRENT_DATE(), MAX(product_start_date)) AS days_since_update,\n",
+        "  COUNT(*) AS row_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized"
+      ]
+    },
+    {
+      "name": "dq_prd_raw",
+      "displayName": "DQ Product Raw",
+      "queryLines": [
+        "SELECT\n",
+        "  product_id,\n",
+        "  product_key,\n",
+        "  product_name,\n",
+        "  cost,\n",
+        "  product_line,\n",
+        "  product_start_date,\n",
+        "  product_end_date,\n",
+        "  category,\n",
+        "  subcategory,\n",
+        "  maintenance_required\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized"
+      ]
+    },
+    {
+      "name": "dq_cust_nulls",
+      "displayName": "DQ Customer NULL Counts",
+      "queryLines": [
+        "SELECT\n",
+        "  'customer_id' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN customer_id IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'customer_key' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN customer_key IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'first_name' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN first_name IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'last_name' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN last_name IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'marital_status' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN marital_status IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'gender' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN gender IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'birth_date' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN birth_date IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'country' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN country IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'created_date' AS column_name,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN created_date IS NULL THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS null_count\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched"
+      ]
+    },
+    {
+      "name": "dq_thresholds",
+      "displayName": "DQ Threshold Summary",
+      "queryLines": [
+        "SELECT\n",
+        "  'Completeness' AS dimension,\n",
+        "  'Customer: birth_date NULLs' AS check_name,\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN birth_date IS NULL THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ) AS actual_value,\n",
+        "  500 AS warn_threshold,\n",
+        "  1000 AS fail_threshold,\n",
+        "  'NULL count' AS metric_unit,\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN birth_date IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 1000\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN birth_date IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 500\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END AS status\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Completeness',\n",
+        "  'Product: category NULLs',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN category IS NULL THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  5,\n",
+        "  10,\n",
+        "  'NULL count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN category IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 10\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN category IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 5\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Completeness',\n",
+        "  'Product: subcategory NULLs',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN subcategory IS NULL THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  5,\n",
+        "  10,\n",
+        "  'NULL count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN subcategory IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 10\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN subcategory IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 5\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Completeness',\n",
+        "  'Product: maintenance_required NULLs',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN maintenance_required IS NULL THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  5,\n",
+        "  10,\n",
+        "  'NULL count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN maintenance_required IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 10\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN maintenance_required IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 5\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Completeness',\n",
+        "  'Product: product_end_date NULLs',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN product_end_date IS NULL THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  250,\n",
+        "  350,\n",
+        "  'NULL count (active products)',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN product_end_date IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 350\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN product_end_date IS NULL THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 250\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Correctness',\n",
+        "  'Customer: Unknown countries',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN country = 'Unknown' THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  200,\n",
+        "  500,\n",
+        "  'Unknown count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN country = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 500\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN country = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 200\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Correctness',\n",
+        "  'Customer: Unknown gender',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN gender = 'Unknown' THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  50,\n",
+        "  200,\n",
+        "  'Unknown count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN gender = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 200\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN gender = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 50\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Correctness',\n",
+        "  'Customer: Unknown marital status',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN marital_status = 'Unknown' THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  50,\n",
+        "  200,\n",
+        "  'Unknown count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN marital_status = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 200\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN marital_status = 'Unknown' THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 50\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Correctness',\n",
+        "  'Product: Non-positive costs',\n",
+        "  CAST(\n",
+        "    SUM(\n",
+        "      CASE\n",
+        "        WHEN cost <= 0 THEN 1\n",
+        "        ELSE 0\n",
+        "      END\n",
+        "    ) AS INT\n",
+        "  ),\n",
+        "  0,\n",
+        "  5,\n",
+        "  'Non-positive count',\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN cost <= 0 THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 5\n",
+        "    THEN\n",
+        "      'FAIL'\n",
+        "    WHEN\n",
+        "      SUM(\n",
+        "        CASE\n",
+        "          WHEN cost <= 0 THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      ) > 0\n",
+        "    THEN\n",
+        "      'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Freshness',\n",
+        "  'Customer: Days since last update',\n",
+        "  CAST(DATEDIFF(CURRENT_DATE(), MAX(created_date)) AS INT),\n",
+        "  30,\n",
+        "  90,\n",
+        "  'Days',\n",
+        "  CASE\n",
+        "    WHEN DATEDIFF(CURRENT_DATE(), MAX(created_date)) > 90 THEN 'FAIL'\n",
+        "    WHEN DATEDIFF(CURRENT_DATE(), MAX(created_date)) > 30 THEN 'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_customer_enriched\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  'Freshness',\n",
+        "  'Product: Days since last update',\n",
+        "  CAST(DATEDIFF(CURRENT_DATE(), MAX(product_start_date)) AS INT),\n",
+        "  365,\n",
+        "  1000,\n",
+        "  'Days',\n",
+        "  CASE\n",
+        "    WHEN DATEDIFF(CURRENT_DATE(), MAX(product_start_date)) > 1000 THEN 'FAIL'\n",
+        "    WHEN DATEDIFF(CURRENT_DATE(), MAX(product_start_date)) > 365 THEN 'WARN'\n",
+        "    ELSE 'PASS'\n",
+        "  END\n",
+        "FROM\n",
+        "  sales_datalakehouse.gold.gold_sales_denormalized"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "12f56fb1",
+      "displayName": "Data Quality Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "cust_freshness",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_freshness",
+                  "fields": [
+                    {
+                      "name": "days_since_update",
+                      "expression": "`days_since_update`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`table_name` = 'gold_customer_enriched'"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Days Since Customer Update"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "days_since_update",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "cust_rows",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_cust_raw",
+                  "fields": [
+                    {
+                      "name": "count(customer_id)",
+                      "expression": "COUNT(`customer_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Customer Rows"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(customer_id)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "prd_freshness",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_freshness",
+                  "fields": [
+                    {
+                      "name": "days_since_update",
+                      "expression": "`days_since_update`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`table_name` = 'gold_sales_denormalized'"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Days Since Product Update"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "days_since_update",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "prd_rows",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_raw",
+                  "fields": [
+                    {
+                      "name": "count(product_id)",
+                      "expression": "COUNT(`product_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Product Rows"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(product_id)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "cust_null_counts",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_cust_nulls",
+                  "fields": [
+                    {
+                      "name": "column_name",
+                      "expression": "`column_name`"
+                    },
+                    {
+                      "name": "sum(null_count)",
+                      "expression": "SUM(`null_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Customer NULL Counts by Column"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "column_name",
+                  "displayName": "column_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(null_count)",
+                  "displayName": "NULL Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "column_name",
+                  "displayName": "column_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "prd_null_counts",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_nulls",
+                  "fields": [
+                    {
+                      "name": "column_name",
+                      "expression": "`column_name`"
+                    },
+                    {
+                      "name": "sum(null_count)",
+                      "expression": "SUM(`null_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Product NULL Counts by Column"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "column_name",
+                  "displayName": "column_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(null_count)",
+                  "displayName": "NULL Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "column_name",
+                  "displayName": "column_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "country_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_cust_raw",
+                  "fields": [
+                    {
+                      "name": "country",
+                      "expression": "`country`"
+                    },
+                    {
+                      "name": "count(customer_id)",
+                      "expression": "COUNT(`customer_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Country Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "country",
+                  "displayName": "country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(customer_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "country",
+                  "displayName": "country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "gender_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_cust_raw",
+                  "fields": [
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "count(customer_id)",
+                      "expression": "COUNT(`customer_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Gender Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "gender",
+                  "displayName": "gender",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(customer_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "gender",
+                  "displayName": "gender",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 7,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "marital_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_cust_raw",
+                  "fields": [
+                    {
+                      "name": "marital_status",
+                      "expression": "`marital_status`"
+                    },
+                    {
+                      "name": "count(customer_id)",
+                      "expression": "COUNT(`customer_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Marital Status Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "marital_status",
+                  "displayName": "marital_status",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(customer_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "marital_status",
+                  "displayName": "marital_status",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 7,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "prd_line_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_raw",
+                  "fields": [
+                    {
+                      "name": "product_line",
+                      "expression": "`product_line`"
+                    },
+                    {
+                      "name": "count(product_id)",
+                      "expression": "COUNT(`product_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Product Line Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "product_line",
+                  "displayName": "product_line",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(product_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "product_line",
+                  "displayName": "product_line",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "category_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_raw",
+                  "fields": [
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    },
+                    {
+                      "name": "count(product_id)",
+                      "expression": "COUNT(`product_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Category Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "category",
+                  "displayName": "category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(product_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "category",
+                  "displayName": "category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 12,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "subcat_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_raw",
+                  "fields": [
+                    {
+                      "name": "subcategory",
+                      "expression": "`subcategory`"
+                    },
+                    {
+                      "name": "count(product_id)",
+                      "expression": "COUNT(`product_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Subcategory Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "subcategory",
+                  "displayName": "subcategory",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(product_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "subcategory",
+                  "displayName": "subcategory",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 12,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "maint_dist",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_prd_raw",
+                  "fields": [
+                    {
+                      "name": "maintenance_required",
+                      "expression": "`maintenance_required`"
+                    },
+                    {
+                      "name": "count(product_id)",
+                      "expression": "COUNT(`product_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Maintenance Required"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "maintenance_required",
+                  "displayName": "maintenance_required",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(product_id)",
+                  "displayName": "Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "maintenance_required",
+                  "displayName": "maintenance_required",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 12,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "days_since_update",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_freshness",
+                  "fields": [
+                    {
+                      "name": "table_name",
+                      "expression": "`table_name`"
+                    },
+                    {
+                      "name": "sum(days_since_update)",
+                      "expression": "SUM(`days_since_update`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Days Since Update by Table"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "table_name",
+                  "displayName": "table_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(days_since_update)",
+                  "displayName": "Days Since Update",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "table_name",
+                  "displayName": "table_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "row_counts",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_freshness",
+                  "fields": [
+                    {
+                      "name": "table_name",
+                      "expression": "`table_name`"
+                    },
+                    {
+                      "name": "sum(row_count)",
+                      "expression": "SUM(`row_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Row Counts by Table"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "table_name",
+                  "displayName": "table_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(row_count)",
+                  "displayName": "Row Count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "table_name",
+                  "displayName": "table_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 17,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "freshness_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_freshness",
+                  "fields": [
+                    {
+                      "name": "table_name",
+                      "expression": "`table_name`"
+                    },
+                    {
+                      "name": "latest_date",
+                      "expression": "`latest_date`"
+                    },
+                    {
+                      "name": "days_since_update",
+                      "expression": "`days_since_update`"
+                    },
+                    {
+                      "name": "row_count",
+                      "expression": "`row_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Freshness Summary"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "table_name"
+                  },
+                  {
+                    "fieldName": "latest_date"
+                  },
+                  {
+                    "fieldName": "days_since_update"
+                  },
+                  {
+                    "fieldName": "row_count"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "dq_alerts_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## DQ Threshold Alerts"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 27,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "failing_checks",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_thresholds",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`status` IN ('FAIL')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Failing Checks"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "warning_checks",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_thresholds",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`status` IN ('WARN')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Warning Checks"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 28,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "passing_checks",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_thresholds",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`status` IN ('PASS')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Passing Checks"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 28,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "dq_threshold_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dq_thresholds",
+                  "fields": [
+                    {
+                      "name": "dimension",
+                      "expression": "`dimension`"
+                    },
+                    {
+                      "name": "check_name",
+                      "expression": "`check_name`"
+                    },
+                    {
+                      "name": "actual_value",
+                      "expression": "`actual_value`"
+                    },
+                    {
+                      "name": "warn_threshold",
+                      "expression": "`warn_threshold`"
+                    },
+                    {
+                      "name": "fail_threshold",
+                      "expression": "`fail_threshold`"
+                    },
+                    {
+                      "name": "metric_unit",
+                      "expression": "`metric_unit`"
+                    },
+                    {
+                      "name": "status",
+                      "expression": "`status`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "DQ Threshold Summary"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "dimension"
+                  },
+                  {
+                    "fieldName": "check_name"
+                  },
+                  {
+                    "fieldName": "actual_value"
+                  },
+                  {
+                    "fieldName": "warn_threshold"
+                  },
+                  {
+                    "fieldName": "fail_threshold"
+                  },
+                  {
+                    "fieldName": "metric_unit"
+                  },
+                  {
+                    "fieldName": "status"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "alert_details",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Alert Summary\n",
+                "\n",
+                "**FAIL — Action Required (3):**\n",
+                "- Customer `birth_date`: 7,442 NULLs (40.3%)\n",
+                "- Customer data 246 days stale\n",
+                "- Product data 4,839 days stale\n",
+                "\n",
+                "**WARN — Monitor (6):**\n",
+                "- Product `category`/`subcategory`/`maintenance`: 7 NULLs each\n",
+                "- Customer `country` Unknown: 337 (1.8%)\n",
+                "- Customer `gender` Unknown: 107 (0.6%)\n",
+                "- Product `cost`: 2 non-positive values\n",
+                "\n",
+                "**PASS (2):**\n",
+                "- Product `product_end_date`: 197 NULLs (expected)\n",
+                "- Customer `marital_status`: 0 Unknowns\n",
+                "\n",
+                "**Threshold Rules:**\n",
+                "- Completeness: WARN at 5-500, FAIL at 10-1000+\n",
+                "- Correctness: WARN at 50-200, FAIL at 200-500+\n",
+                "- Freshness: WARN at 30-365 days, FAIL at 90-1000+"
+              ]
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 30,
+            "width": 4,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
